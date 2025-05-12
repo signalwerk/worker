@@ -61,6 +61,7 @@ The admin interface allows you to:
 - Delete workers
 
 When you make changes to workers, the system will:
+
 1. Update the configuration files
 2. Generate a new capnp configuration using Handlebars
 3. Create a restart signal file in the DATA directory
@@ -113,6 +114,7 @@ This system uses three Docker containers working together:
 If you encounter issues with the workerd not restarting:
 
 1. Check the workerd service logs to ensure the restart watcher is running:
+
    ```bash
    docker-compose logs workerd
    ```
@@ -129,10 +131,16 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 
 This project is licensed under the ISC License.
 
-npx workerd serve config.capnp 
-
+npx workerd serve config.capnp
 
 curl -X POST http://localhost:8088 -d "Hello2"
 
-
 curl http://localhost:8088/w1
+
+## restart workerd
+
+```
+docker compose down
+docker compose build workerd
+docker compose up
+```

@@ -10,6 +10,9 @@ RUN apt-get update && apt-get install -y \
     bash \
     && rm -rf /var/lib/apt/lists/*
 
+# Install workerd
+RUN npm install -g workerd@1.20250510.0
+
 
 COPY package.json package-lock.json* ./
 

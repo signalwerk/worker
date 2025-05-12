@@ -20,6 +20,18 @@ const authenticateApiKey = (req, res, next) => {
   next();
 };
 
+// Function to start workerd
+const startWorkerd = () => {
+  console.log('Starting workerd...');
+  exec('/usr/local/bin/workerd serve /app/DATA/config.capnp > /app/workerd.log 2>&1 & echo $! > /app/workerd.pid', (error, stdout, stderr) => {
+    if (error) {
+      console.error(`Error starting workerd: ${error}`);
+      return;
+    }
+    console.log('Workerd started successfully');
+  });
+};
+
 // Health check endpoint
 app.get('/health', (req, res) => {
   res.status(200).json({ status: 'healthy' });
@@ -76,4 +88,7 @@ app.post('/restart', authenticateApiKey, (req, res) => {
 // Start the server
 app.listen(PORT, () => {
   console.log(`Restart service running on port ${PORT}`);
+  
+  // Start workerd on service initialization
+  startWorkerd();
 }); 
