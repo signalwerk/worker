@@ -14,7 +14,7 @@ RUN apt-get update && apt-get install -y \
 RUN npm install -g workerd@1.20250510.0
 
 
-COPY package.json package-lock.json* ./
+COPY package*.json ./
 
 # Install Node.js dependencies
 RUN npm ci

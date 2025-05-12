@@ -1,0 +1,12 @@
+// KV Service for {{name}}
+
+const KV = function (env) {
+  const get = async (key) => {
+    return await env.get({ key });
+  };
+
+  const set = async (key, value) => {
+    await env.set({ key, value });
+  };
+  return { get, set };
+};

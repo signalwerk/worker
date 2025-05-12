@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   # Node.js service for admin interface and worker management
   worker-admin:
@@ -53,4 +51,4 @@ services:
     restart: unless-stopped
 
 volumes:
-  kv-data: 
+  kv-data:

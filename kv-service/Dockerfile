@@ -2,9 +2,13 @@ FROM node:18-alpine
 
 WORKDIR /app
 
-COPY package.json package-lock.json* ./
+# Install build dependencies for better-sqlite3
+RUN apk add --no-cache python3 make g++ gcc sqlite-dev
 
-RUN npm ci
+COPY package*.json ./
+
+# Install dependencies and force rebuild of better-sqlite3
+RUN npm ci --build-from-source
 
 COPY . .
 
