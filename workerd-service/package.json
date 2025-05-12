@@ -1,0 +1,13 @@
+{
+  "name": "workerd-service",
+  "version": "1.0.0",
+  "description": "Workerd service with restart API",
+  "main": "restart-service.js",
+  "scripts": {
+    "start": "node restart-service.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "workerd": "^1.20250510.0"
+  }
+}

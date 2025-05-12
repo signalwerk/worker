@@ -120,29 +120,24 @@ const generateCapnpConfig = async (workerData) => {
 };
 
 // Restart workerd container
-const restartWorkerd = () => {
-  console.log(`Creating restart signal for container: ${WORKERD_CONTAINER_NAME}`);
+const restartWorkerd = async () => {
+  console.log(`Restarting workerd service via API call`);
 
-  // Create a signal file in the shared volume
-  const signalFilePath = path.join(DATA_DIR, '.restart-workerd');
-  const timestamp = new Date().toISOString();
-
-  return fs.writeFile(signalFilePath, timestamp)
-    .then(() => {
-      console.log(`Restart signal file created at ${signalFilePath} with timestamp ${timestamp}`);
-      console.log('Waiting for external script to detect the signal and restart the container');
-      
-      // Wait a moment to simulate the restart
-      return new Promise(resolve => setTimeout(resolve, 2000));
-    })
-    .then(() => {
-      console.log('Restart process completed');
-      return true;
-    })
-    .catch(err => {
-      console.error('Error creating restart signal:', err);
-      throw err;
+  const WORKERD_RESTART_URL = process.env.WORKERD_RESTART_URL || "http://workerd:3002/restart";
+  
+  try {
+    const response = await axios.post(WORKERD_RESTART_URL, {}, {
+      headers: {
+        'x-api-key': API_KEY
+      }
     });
+    
+    console.log('Restart response:', response.data);
+    return true;
+  } catch (error) {
+    console.error('Error restarting workerd service:', error.message);
+    throw error;
+  }
 };
 
 // Add body-parser middleware for cookie handling

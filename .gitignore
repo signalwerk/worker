@@ -1,3 +1,4 @@
 /__OLD
 /node_modules
 /kv-service/node_modules
+/workerd-service/node_modules
