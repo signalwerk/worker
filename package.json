@@ -1,0 +1,16 @@
+{
+  "name": "worker",
+  "version": "1.0.0",
+  "description": "npx workerd serve config.capnp",
+  "main": "index.js",
+  "scripts": {
+    "start": "workerd serve conf/config.capnp",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "workerd": "^1.20250510.0"
+  }
+}
