@@ -10,14 +10,12 @@ services:
       - "3000:3000"
     volumes:
       - ./DATA:/app/DATA
-      # - ./conf:/app/conf
+      - ./conf:/app/conf
       - ./admin/templates:/app/templates
-      - /var/run/docker.sock:/var/run/docker.sock
     environment:
       - NODE_ENV=production
       - API_KEY=${API_KEY:-admin_api_key}
       - KV_SERVICE_URL=http://kv-service:3001
-      - WORKERD_CONTAINER_NAME=worker-workerd-1
     depends_on:
       - kv-service
     restart: unless-stopped

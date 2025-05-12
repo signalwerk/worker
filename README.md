@@ -38,13 +38,6 @@ API_KEY=your_secure_api_key
 docker-compose up -d
 ```
 
-5. Start the restart watcher script in a separate terminal window:
-
-```bash
-chmod +x watch-restart.sh
-./watch-restart.sh
-```
-
 ## Usage
 
 Once the services are running, you can access:
@@ -70,11 +63,17 @@ The admin interface allows you to:
 When you make changes to workers, the system will:
 1. Update the configuration files
 2. Generate a new capnp configuration using Handlebars
-3. Create a restart signal file that the watcher script will detect
+3. Create a restart signal file in the DATA directory
 
-### Container Restart System
+### Restart System
 
-To avoid Docker-in-Docker issues, the admin service writes a signal file to the shared DATA volume. The `watch-restart.sh` script running on the host watches for changes to this file and restarts the workerd container when needed.
+The system uses a self-contained restart approach:
+
+1. The admin service writes a timestamp to a signal file (`.restart-workerd`) in the shared DATA volume
+2. A restart watcher script running inside the workerd container detects this file change
+3. The watcher script stops and restarts the workerd process inside the container
+
+This approach keeps the restart logic contained within the Docker Compose setup without requiring external scripts or Docker access.
 
 ### KV Service API
 
@@ -107,7 +106,20 @@ This system uses three Docker containers working together:
 
 1. **worker-admin**: Provides a web interface and API for managing workers. Generates capnp configuration files based on worker data.
 2. **kv-service**: Provides key-value storage for workers.
-3. **workerd**: Runs the Cloudflare Workers runtime using the generated configuration.
+3. **workerd**: Runs the Cloudflare Workers runtime using the generated configuration. Contains its own restart watcher to detect changes.
+
+## Troubleshooting
+
+If you encounter issues with the workerd not restarting:
+
+1. Check the workerd service logs to ensure the restart watcher is running:
+   ```bash
+   docker-compose logs workerd
+   ```
+
+2. Verify the DATA volume is correctly mounted in both the admin and workerd containers
+
+3. Ensure the admin service has write permissions to the signal file location
 
 ## Contributing
 

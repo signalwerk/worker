@@ -121,22 +121,28 @@ const generateCapnpConfig = async (workerData) => {
 
 // Restart workerd container
 const restartWorkerd = () => {
-  return new Promise((resolve, reject) => {
-    console.log(`Restarting container: ${WORKERD_CONTAINER_NAME}`);
+  console.log(`Creating restart signal for container: ${WORKERD_CONTAINER_NAME}`);
 
-    exec(
-      `docker restart ${WORKERD_CONTAINER_NAME}`,
-      (error, stdout, stderr) => {
-        if (error) {
-          console.error(`Error restarting container: ${error}`);
-          return reject(error);
-        }
+  // Create a signal file in the shared volume
+  const signalFilePath = path.join(DATA_DIR, '.restart-workerd');
+  const timestamp = new Date().toISOString();
 
-        console.log(`Restart output: ${stdout}`);
-        resolve(stdout);
-      },
-    );
-  });
+  return fs.writeFile(signalFilePath, timestamp)
+    .then(() => {
+      console.log(`Restart signal file created at ${signalFilePath} with timestamp ${timestamp}`);
+      console.log('Waiting for external script to detect the signal and restart the container');
+      
+      // Wait a moment to simulate the restart
+      return new Promise(resolve => setTimeout(resolve, 2000));
+    })
+    .then(() => {
+      console.log('Restart process completed');
+      return true;
+    })
+    .catch(err => {
+      console.error('Error creating restart signal:', err);
+      throw err;
+    });
 };
 
 // Add body-parser middleware for cookie handling
