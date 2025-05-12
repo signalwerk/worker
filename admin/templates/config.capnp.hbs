@@ -32,15 +32,18 @@ const router :Workerd.Worker = (
 const {{name}} :Workerd.Worker = (
   modules = [
     (name = "{{name}}", esModule = embed "{{name}}/index.js"),
+    {{#each bindings}}
+    #  (name = "{{@key}}", esModule = embed "{{name}}/kv-service.js"),
+    {{/each}}
   ],
   compatibilityDate = "2024-04-03",
   compatibilityFlags = [],
   bindings = [
-    (name = "MY_KV", service = "kv"),
     (name = "_config", json = embed "{{name}}/_meta.json"),
     {{#each bindings}}
-    (name = "{{@key}}", service = "{{this}}"),
+    (name = "KV_ALL", service = "kv"),
+    # (name = "{{@key}}", service = "{{@key}}"),
     {{/each}}
   ],
 );
-{{/each}} 
+{{/each}}

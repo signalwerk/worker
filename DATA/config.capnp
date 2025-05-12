@@ -5,6 +5,7 @@ const config :Workerd.Config = (
     (name = "w1", worker = .w1),
     (name = "w2", worker = .w2),
     (name = "test", worker = .test),
+    (name = "testKV", worker = .testKV),
     (name = "router", worker = .router),
     (name = "kv", worker = .kv),
   ],
@@ -35,7 +36,6 @@ const w1 :Workerd.Worker = (
   compatibilityDate = "2024-04-03",
   compatibilityFlags = [],
   bindings = [
-    (name = "MY_KV", service = "kv"),
     (name = "_config", json = embed "w1/_meta.json"),
   ],
 );
@@ -46,19 +46,28 @@ const w2 :Workerd.Worker = (
   compatibilityDate = "2024-04-03",
   compatibilityFlags = [],
   bindings = [
-    (name = "MY_KV", service = "kv"),
     (name = "_config", json = embed "w2/_meta.json"),
   ],
+);
+const testKV :Workerd.Worker = (
+  modules = [
+    (name = "testKV", esModule = embed "test/kv-service.js"),
+  ],
+  compatibilityDate = "2024-04-03",
+  compatibilityFlags = [],
+  # bindings = [
+  #   (name = "KV", service = "kv"),
+  # ],
 );
 const test :Workerd.Worker = (
   modules = [
     (name = "test", esModule = embed "test/index.js"),
+    # (name = "@workerd/kv", esModule = embed "test/kv-service.js"),
   ],
   compatibilityDate = "2024-04-03",
   compatibilityFlags = [],
   bindings = [
-    (name = "MY_KV", service = "kv"),
     (name = "_config", json = embed "test/_meta.json"),
-    (name = "asdf", service = "kv"),
+    (name = "testKV", service = "testKV"),
   ],
 );

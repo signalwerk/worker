@@ -1,8 +1,8 @@
 {
   "routes": [
-    "kw52"
+    "kw52234"
   ],
   "bindings": {
-    "asdf": "kv"
+    "MY-personal-kv": "kv"
   }
 }

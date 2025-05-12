@@ -42,6 +42,7 @@ export default {
       try {
         // Await the worker's response to catch any Promise rejections
         const response = await worker.fetch(request);
+        // const response = new Response("Hello from router");
         return response;
       } catch (workerError) {
         console.error(`Worker execution error in '${route}':`, workerError);

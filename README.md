@@ -1,3 +1,5 @@
+https://github.com/cloudflare/workerd/blob/main/src/workerd/server/workerd.capnp
+
 # Worker Manager
 
 A Docker Compose setup for managing Workerd workers with an admin interface and a standalone KV service.

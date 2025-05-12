@@ -262,6 +262,37 @@ app.get("/api/workers/:name/code", authenticateApiKey, async (req, res) => {
   }
 });
 
+// Generate KV service file for a binding
+const generateKVServiceFile = async (kvServicePath) => {
+  try {
+    // Read the template
+    const templatePath = path.join(APP_DIR, "templates", "kv-service.js.hbs");
+    const templateContent = await fs.readFile(templatePath, "utf8");
+
+    // Compile the template
+    const template = handlebars.compile(templateContent);
+
+    // Generate the service file
+    const serviceContent = template({ name: "xxxx" });
+
+    // Create directory for the binding if it doesn't exist
+    const bindingDir = path.join(DATA_DIR, bindingName);
+    await fs.ensureDir(bindingDir);
+
+    // Write the service file
+    const serviceFilePath = path.join(bindingDir, "kv-service.js");
+    await fs.writeFile(serviceFilePath, kvServicePath);
+
+    return true;
+  } catch (error) {
+    console.error(
+      `Error generating KV service file for binding (${kvServicePath}):`,
+      error,
+    );
+    return false;
+  }
+};
+
 // Update worker code
 app.put("/api/workers/:name/code", authenticateApiKey, async (req, res) => {
   const { name } = req.params;
@@ -339,6 +370,12 @@ export default {
     `.trim(),
     );
 
+    // Generate KV service files for each binding
+    for (const bindingName of Object.keys(bindings)) {
+      const kvServicePath = path.join(workerDir, bindingName, "kv-service.js");
+      await generateKVServiceFile(kvServicePath);
+    }
+
     // Update main meta data
     metaData.routes.push(name);
     await fs.writeJson(metaPath, metaData, { spaces: 2 });
@@ -382,6 +419,12 @@ app.put("/api/workers/:name", authenticateApiKey, async (req, res) => {
     const workerDir = path.join(DATA_DIR, name);
     if (!(await fs.pathExists(workerDir))) {
       return res.status(404).json({ error: "Worker not found" });
+    }
+
+    // Generate KV service files for each binding
+    for (const bindingName of Object.keys(bindings)) {
+      const kvServicePath = path.join(workerDir, bindingName, "kv-service.js");
+      await generateKVServiceFile(kvServicePath);
     }
 
     // Update worker metadata
