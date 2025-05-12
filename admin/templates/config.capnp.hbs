@@ -39,7 +39,7 @@ const {{name}} :Workerd.Worker = (
     (name = "MY_KV", service = "kv"),
     (name = "_config", json = embed "{{name}}/_meta.json"),
     {{#each bindings}}
-    (name = "{{@key}}", {{@key}} = "{{this}}"),
+    (name = "{{@key}}", service = "{{this}}"),
     {{/each}}
   ],
 );

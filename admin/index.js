@@ -123,19 +123,24 @@ const generateCapnpConfig = async (workerData) => {
 const restartWorkerd = async () => {
   console.log(`Restarting workerd service via API call`);
 
-  const WORKERD_RESTART_URL = process.env.WORKERD_RESTART_URL || "http://workerd:3002/restart";
-  
+  const WORKERD_RESTART_URL =
+    process.env.WORKERD_RESTART_URL || "http://workerd:3002/restart";
+
   try {
-    const response = await axios.post(WORKERD_RESTART_URL, {}, {
-      headers: {
-        'x-api-key': API_KEY
-      }
-    });
-    
-    console.log('Restart response:', response.data);
+    const response = await axios.post(
+      WORKERD_RESTART_URL,
+      {},
+      {
+        headers: {
+          "x-api-key": API_KEY,
+        },
+      },
+    );
+
+    console.log("Restart response:", response.data);
     return true;
   } catch (error) {
-    console.error('Error restarting workerd service:', error.message);
+    console.error("Error restarting workerd service:", error.message);
     throw error;
   }
 };
@@ -282,10 +287,19 @@ app.put("/api/workers/:name/code", authenticateApiKey, async (req, res) => {
 
 app.post("/api/workers", authenticateApiKey, async (req, res) => {
   try {
-    const { name, routes = [], bindings = {} } = req.body;
+    const { name, route = "", bindings = {} } = req.body;
 
     if (!name || !/^[a-zA-Z0-9_-]+$/.test(name)) {
       return res.status(400).json({ error: "Invalid worker name" });
+    }
+
+    // Validate bindings format - should be name:service pairs
+    for (const [bindingName, service] of Object.entries(bindings)) {
+      if (service !== "kv") {
+        return res.status(400).json({
+          error: `Invalid service type for binding '${bindingName}'. Only 'kv' is supported.`,
+        });
+      }
     }
 
     // Load current meta data
@@ -303,7 +317,8 @@ app.post("/api/workers", authenticateApiKey, async (req, res) => {
 
     // Create worker metadata
     const workerMeta = {
-      routes,
+      name,
+      route,
       bindings,
     };
 
@@ -346,6 +361,22 @@ app.put("/api/workers/:name", authenticateApiKey, async (req, res) => {
   try {
     const { name } = req.params;
     const { routes = [], bindings = {} } = req.body;
+
+    // Validate that routes is an array with at most one element
+    if (!Array.isArray(routes) || routes.length > 1) {
+      return res
+        .status(400)
+        .json({ error: "Routes must be a single route value" });
+    }
+
+    // Validate bindings format - should be name:service pairs
+    for (const [bindingName, service] of Object.entries(bindings)) {
+      if (service !== "kv") {
+        return res.status(400).json({
+          error: `Invalid service type for binding '${bindingName}'. Only 'kv' is supported.`,
+        });
+      }
+    }
 
     // Check if worker exists
     const workerDir = path.join(DATA_DIR, name);

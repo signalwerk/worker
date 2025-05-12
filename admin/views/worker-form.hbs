@@ -22,10 +22,9 @@
       </div>
       
       <div class="mb-3">
-        <label for="routes" class="form-label">Routes (one per line)</label>
-        <textarea class="form-control" id="routes" name="routes" rows="3">{{#each worker.routes}}{{this}}
-{{/each}}</textarea>
-        <div class="form-text">Enter each route pattern on a new line.</div>
+        <label for="route" class="form-label">Route</label>
+        <input type="text" class="form-control" id="route" name="route" value="{{#if worker.routes}}{{worker.routes.[0]}}{{/if}}">
+        <div class="form-text">Enter the route pattern for this worker.</div>
       </div>
       
       <div class="mb-3">
@@ -33,8 +32,10 @@
         <div id="bindings-container">
           {{#each worker.bindings}}
             <div class="input-group mb-2 binding-row">
-              <input type="text" class="form-control binding-key" placeholder="Key" value="{{@key}}">
-              <input type="text" class="form-control binding-value" placeholder="Value" value="{{this}}">
+              <input type="text" class="form-control binding-name" placeholder="Name" value="{{@key}}">
+              <select class="form-select binding-service" style="max-width: 120px;">
+                <option value="kv" selected>KV</option>
+              </select>
               <button type="button" class="btn btn-outline-danger remove-binding">Remove</button>
             </div>
           {{/each}}
@@ -75,20 +76,20 @@
       e.preventDefault();
       
       const name = document.getElementById('name').value.trim();
-      const routesText = document.getElementById('routes').value.trim();
+      const route = document.getElementById('route').value.trim();
       
-      // Parse routes
-      const routes = routesText ? routesText.split('\n').map(route => route.trim()).filter(Boolean) : [];
+      // Parse routes - now just a single value in an array
+      const routes = route ? [route] : [];
       
       // Parse bindings
       const bindings = {};
       const bindingRows = document.querySelectorAll('.binding-row');
       bindingRows.forEach(row => {
-        const key = row.querySelector('.binding-key').value.trim();
-        const value = row.querySelector('.binding-value').value.trim();
+        const bindingName = row.querySelector('.binding-name').value.trim();
+        const service = row.querySelector('.binding-service').value;
         
-        if (key && value) {
-          bindings[key] = value;
+        if (bindingName && service) {
+          bindings[bindingName] = service;
         }
       });
       
@@ -123,8 +124,10 @@
       const row = document.createElement('div');
       row.className = 'input-group mb-2 binding-row';
       row.innerHTML = `
-        <input type="text" class="form-control binding-key" placeholder="Key">
-        <input type="text" class="form-control binding-value" placeholder="Value">
+        <input type="text" class="form-control binding-name" placeholder="Name">
+        <select class="form-select binding-service" style="max-width: 120px;">
+          <option value="kv" selected>KV</option>
+        </select>
         <button type="button" class="btn btn-outline-danger remove-binding">Remove</button>
       `;
       bindingsContainer.appendChild(row);
