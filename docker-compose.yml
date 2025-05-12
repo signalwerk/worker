@@ -10,7 +10,7 @@ services:
       - "3000:3000"
     volumes:
       - ./DATA:/app/DATA
-      - ./conf:/app/conf
+      # - ./conf:/app/conf
       - ./admin/templates:/app/templates
       - /var/run/docker.sock:/var/run/docker.sock
     environment:

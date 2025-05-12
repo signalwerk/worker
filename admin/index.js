@@ -16,6 +16,9 @@ const KV_SERVICE_URL = process.env.KV_SERVICE_URL || "http://localhost:3001";
 const WORKERD_CONTAINER_NAME =
   process.env.WORKERD_CONTAINER_NAME || "worker-workerd-1";
 
+const APP_DIR = path.join(__dirname, ".");
+const DATA_DIR = path.join(__dirname, "DATA");
+
 // Middleware
 app.use(cors());
 app.use(bodyParser.json());
@@ -27,15 +30,15 @@ app.engine(
   exphbs.engine({
     extname: ".hbs",
     defaultLayout: "main",
-    layoutsDir: path.join(__dirname, "views/layouts"),
-    partialsDir: path.join(__dirname, "views/partials"),
+    layoutsDir: path.join(APP_DIR, "views/layouts"),
+    partialsDir: path.join(APP_DIR, "views/partials"),
   }),
 );
 app.set("view engine", "hbs");
-app.set("views", path.join(__dirname, "views"));
+app.set("views", path.join(APP_DIR, "views"));
 
 // Serve static files
-app.use(express.static(path.join(__dirname, "public")));
+app.use(express.static(path.join(APP_DIR, "public")));
 
 // API Key authentication middleware
 const authenticateApiKey = (req, res, next) => {
@@ -51,33 +54,28 @@ const authenticateApiKey = (req, res, next) => {
 // Authentication middleware for UI pages
 const authenticateForUi = (req, res, next) => {
   const authCookie = req.cookies?.apiKey;
-  
-  console.log('Auth cookie:', authCookie);
-  console.log('Expected API key:', API_KEY);
-  
+
+  console.log("Auth cookie:", authCookie);
+  console.log("Expected API key:", API_KEY);
+
   if (!authCookie || authCookie !== API_KEY) {
-    console.log('Authentication failed, redirecting to login');
-    return res.redirect('/login');
+    console.log("Authentication failed, redirecting to login");
+    return res.redirect("/login");
   }
-  
-  console.log('Authentication successful');
+
+  console.log("Authentication successful");
   next();
 };
 
 // Load worker data from filesystem
 const getWorkerData = async () => {
   try {
-    const metaPath = path.join(__dirname, "../DATA", "_meta.json");
+    const metaPath = path.join(DATA_DIR, "_meta.json");
     const metaData = await fs.readJson(metaPath);
 
     const workers = [];
     for (const workerName of metaData.routes) {
-      const workerMetaPath = path.join(
-        __dirname,
-        "../DATA",
-        workerName,
-        "_meta.json",
-      );
+      const workerMetaPath = path.join(DATA_DIR, workerName, "_meta.json");
 
       try {
         const workerMeta = await fs.readJson(workerMetaPath);
@@ -101,7 +99,7 @@ const getWorkerData = async () => {
 const generateCapnpConfig = async (workerData) => {
   try {
     // Read the template
-    const templatePath = path.join(__dirname, "templates", "config.capnp.hbs");
+    const templatePath = path.join(APP_DIR, "templates", "config.capnp.hbs");
     const templateContent = await fs.readFile(templatePath, "utf8");
 
     // Compile the template
@@ -111,7 +109,7 @@ const generateCapnpConfig = async (workerData) => {
     const config = template(workerData);
 
     // Write the updated config
-    const configPath = path.join(__dirname, "../DATA", "config.capnp");
+    const configPath = path.join(DATA_DIR, "config.capnp");
     await fs.writeFile(configPath, config);
 
     return true;
@@ -152,24 +150,24 @@ app.get("/login", (req, res) => {
 
 app.post("/login", (req, res) => {
   const { apiKey } = req.body;
-  
-  console.log('Received login attempt with apiKey:', apiKey);
-  
+
+  console.log("Received login attempt with apiKey:", apiKey);
+
   if (apiKey === API_KEY) {
-    console.log('Login successful, setting cookie');
-    
+    console.log("Login successful, setting cookie");
+
     // Set a cookie with the API key
     res.cookie("apiKey", apiKey, {
       httpOnly: false, // Changed to false so client JavaScript can access it
       maxAge: 24 * 60 * 60 * 1000, // 24 hours
-      path: '/',        // Ensure the cookie is available for the entire site
-      sameSite: 'strict' // Security best practice
+      path: "/", // Ensure the cookie is available for the entire site
+      sameSite: "strict", // Security best practice
     });
 
     return res.redirect("/");
   }
 
-  console.log('Login failed, invalid API key');
+  console.log("Login failed, invalid API key");
   res.render("login", {
     layout: "auth",
     error: "Invalid API key",
@@ -214,7 +212,7 @@ app.get("/workers/:name/code", authenticateForUi, async (req, res) => {
   }
 
   try {
-    const codeFilePath = path.join(__dirname, "../DATA", name, "index.js");
+    const codeFilePath = path.join(DATA_DIR, name, "index.js");
     const code = await fs.readFile(codeFilePath, "utf8");
 
     res.render("code-editor", {
@@ -249,7 +247,7 @@ app.get("/api/workers/:name", authenticateApiKey, async (req, res) => {
 app.get("/api/workers/:name/code", authenticateApiKey, async (req, res) => {
   const { name } = req.params;
   try {
-    const codeFilePath = path.join(__dirname, "DATA", name, "index.js");
+    const codeFilePath = path.join(DATA_DIR, name, "index.js");
     const code = await fs.readFile(codeFilePath, "utf8");
     res.json({ code });
   } catch (error) {
@@ -268,7 +266,7 @@ app.put("/api/workers/:name/code", authenticateApiKey, async (req, res) => {
   }
 
   try {
-    const codeFilePath = path.join(__dirname, "../DATA", name, "index.js");
+    const codeFilePath = path.join(DATA_DIR, name, "index.js");
     await fs.writeFile(codeFilePath, code);
 
     // Restart workerd to apply code changes
@@ -290,7 +288,7 @@ app.post("/api/workers", authenticateApiKey, async (req, res) => {
     }
 
     // Load current meta data
-    const metaPath = path.join(__dirname, "DATA", "_meta.json");
+    const metaPath = path.join(DATA_DIR, "_meta.json");
     const metaData = await fs.readJson(metaPath);
 
     // Check if worker already exists
@@ -299,7 +297,7 @@ app.post("/api/workers", authenticateApiKey, async (req, res) => {
     }
 
     // Create worker directory
-    const workerDir = path.join(__dirname, "DATA", name);
+    const workerDir = path.join(DATA_DIR, name);
     await fs.ensureDir(workerDir);
 
     // Create worker metadata
@@ -349,7 +347,7 @@ app.put("/api/workers/:name", authenticateApiKey, async (req, res) => {
     const { routes = [], bindings = {} } = req.body;
 
     // Check if worker exists
-    const workerDir = path.join(__dirname, "../DATA", name);
+    const workerDir = path.join(DATA_DIR, name);
     if (!(await fs.pathExists(workerDir))) {
       return res.status(404).json({ error: "Worker not found" });
     }
@@ -383,7 +381,7 @@ app.delete("/api/workers/:name", authenticateApiKey, async (req, res) => {
     const { name } = req.params;
 
     // Load current meta data
-    const metaPath = path.join(__dirname, "DATA", "_meta.json");
+    const metaPath = path.join(DATA_DIR, "_meta.json");
     const metaData = await fs.readJson(metaPath);
 
     // Check if worker exists
@@ -396,7 +394,7 @@ app.delete("/api/workers/:name", authenticateApiKey, async (req, res) => {
     await fs.writeJson(metaPath, metaData, { spaces: 2 });
 
     // Delete worker directory
-    const workerDir = path.join(__dirname, "DATA", name);
+    const workerDir = path.join(DATA_DIR, name);
     await fs.remove(workerDir);
 
     // Generate new capnp config

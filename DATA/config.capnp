@@ -59,6 +59,5 @@ const test :Workerd.Worker = (
   bindings = [
     (name = "MY_KV", service = "kv"),
     (name = "_config", json = embed "test/_meta.json"),
-    (name = "HLL2", HLL2 = "Welt"),
   ],
 );

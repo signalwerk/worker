@@ -23,7 +23,7 @@ This Docker Compose setup includes the following services:
 2. Create the required directory structure:
 
 ```bash
-mkdir -p admin/views/layouts admin/views/partials admin/templates kv-service workerd-service
+mkdir -p admin/views/layouts admin/views/partials admin/templates kv-service workerd-service admin/public/js
 ```
 
 3. Set up your environment variables by creating a `.env` file:
@@ -38,6 +38,13 @@ API_KEY=your_secure_api_key
 docker-compose up -d
 ```
 
+5. Start the restart watcher script in a separate terminal window:
+
+```bash
+chmod +x watch-restart.sh
+./watch-restart.sh
+```
+
 ## Usage
 
 Once the services are running, you can access:
@@ -48,7 +55,7 @@ Once the services are running, you can access:
 
 ### Security
 
-The admin interface is secured by an API key that is set in the environment variables. You will be prompted to enter this key when accessing the admin interface. After successful authentication, the key is stored in a secure HTTP-only cookie.
+The admin interface is secured by an API key that is set in the environment variables. You will be prompted to enter this key when accessing the admin interface. After successful authentication, the key is stored in a cookie.
 
 ### Admin Interface
 
@@ -63,7 +70,11 @@ The admin interface allows you to:
 When you make changes to workers, the system will:
 1. Update the configuration files
 2. Generate a new capnp configuration using Handlebars
-3. Directly restart the workerd container to apply the changes
+3. Create a restart signal file that the watcher script will detect
+
+### Container Restart System
+
+To avoid Docker-in-Docker issues, the admin service writes a signal file to the shared DATA volume. The `watch-restart.sh` script running on the host watches for changes to this file and restarts the workerd container when needed.
 
 ### KV Service API
 
@@ -94,7 +105,7 @@ Authentication is done via the `X-API-Key` header.
 
 This system uses three Docker containers working together:
 
-1. **worker-admin**: Provides a web interface and API for managing workers. Generates capnp configuration files based on worker data. This service also handles restarting the workerd container when changes are made.
+1. **worker-admin**: Provides a web interface and API for managing workers. Generates capnp configuration files based on worker data.
 2. **kv-service**: Provides key-value storage for workers.
 3. **workerd**: Runs the Cloudflare Workers runtime using the generated configuration.
 
