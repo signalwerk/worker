@@ -1,0 +1,28 @@
+{
+  "name": "worker-admin",
+  "version": "1.0.0",
+  "description": "Admin interface for managing workers",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": ["admin", "workers", "management"],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "body-parser": "^1.20.2",
+    "axios": "^1.4.0",
+    "morgan": "^1.10.0",
+    "handlebars": "^4.7.7",
+    "express-handlebars": "^7.0.7",
+    "fs-extra": "^11.1.1",
+    "cookie-parser": "^1.4.6"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.22"
+  }
+} 

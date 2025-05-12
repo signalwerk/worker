@@ -1,0 +1,55 @@
+version: '3.8'
+
+services:
+  # Node.js service for admin interface and worker management
+  worker-admin:
+    build:
+      context: ./admin
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./DATA:/app/DATA
+      - ./conf:/app/conf
+      - ./admin/templates:/app/templates
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - NODE_ENV=production
+      - API_KEY=${API_KEY:-admin_api_key}
+      - KV_SERVICE_URL=http://kv-service:3001
+      - WORKERD_CONTAINER_NAME=worker-workerd-1
+    depends_on:
+      - kv-service
+    restart: unless-stopped
+
+  # Standalone KV service
+  kv-service:
+    build:
+      context: ./kv-service
+      dockerfile: Dockerfile
+    ports:
+      - "3001:3001"
+    volumes:
+      - kv-data:/app/data
+    environment:
+      - NODE_ENV=production
+      - API_KEY=${API_KEY:-admin_api_key}
+    restart: unless-stopped
+
+  # Workerd runtime service
+  workerd:
+    build:
+      context: ./workerd-service
+      dockerfile: Dockerfile
+    ports:
+      - "8088:8088"
+    volumes:
+      - ./DATA:/app/DATA
+      - ./conf:/app/conf
+    depends_on:
+      - worker-admin
+      - kv-service
+    restart: unless-stopped
+
+volumes:
+  kv-data: 

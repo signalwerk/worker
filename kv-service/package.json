@@ -1,0 +1,24 @@
+{
+  "name": "kv-service",
+  "version": "1.0.0",
+  "description": "KV Service for Workers",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": ["kv", "service", "workers"],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "body-parser": "^1.20.2",
+    "morgan": "^1.10.0",
+    "level": "^8.0.0"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.22"
+  }
+} 

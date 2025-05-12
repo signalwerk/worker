@@ -1,0 +1,19 @@
+<img class="mb-4" src="https://cdn.jsdelivr.net/npm/bootstrap-icons/icons/cloud-fill.svg" alt="" width="72" height="57">
+<h1 class="h3 mb-3 fw-normal">Worker Admin</h1>
+
+{{#if error}}
+<div class="alert alert-danger" role="alert">
+  {{error}}
+</div>
+{{/if}}
+
+<form method="POST" action="/login">
+  <div class="form-floating">
+    <input type="password" class="form-control" id="apiKey" name="apiKey" placeholder="API Key" required>
+    <label for="apiKey">API Key</label>
+  </div>
+  
+  <button class="w-100 btn btn-lg btn-primary mt-3" type="submit">Sign in</button>
+  
+  <p class="mt-5 mb-3 text-muted">&copy; 2024</p>
+</form> 

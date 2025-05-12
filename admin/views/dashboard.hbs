@@ -1,0 +1,94 @@
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+  <h1 class="h2">Workers Dashboard</h1>
+  <div class="btn-toolbar mb-2 mb-md-0">
+    <a href="/workers/new" class="btn btn-sm btn-outline-primary">
+      Add New Worker
+    </a>
+    <a href="/logout" class="btn btn-sm btn-outline-secondary ms-2">
+      Logout
+    </a>
+  </div>
+</div>
+
+<div class="table-responsive">
+  <table class="table table-striped table-sm">
+    <thead>
+      <tr>
+        <th scope="col">Name</th>
+        <th scope="col">Routes</th>
+        <th scope="col">Bindings</th>
+        <th scope="col">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {{#if workers.length}}
+        {{#each workers}}
+          <tr>
+            <td>{{name}}</td>
+            <td>
+              {{#if routes.length}}
+                <ul class="list-unstyled mb-0">
+                  {{#each routes}}
+                    <li>{{this}}</li>
+                  {{/each}}
+                </ul>
+              {{else}}
+                <span class="text-muted">None</span>
+              {{/if}}
+            </td>
+            <td>
+              {{#if bindings}}
+                <ul class="list-unstyled mb-0">
+                  {{#each bindings}}
+                    <li>{{@key}}: {{this}}</li>
+                  {{/each}}
+                </ul>
+              {{else}}
+                <span class="text-muted">None</span>
+              {{/if}}
+            </td>
+            <td>
+              <div class="btn-group btn-group-sm">
+                <a href="/workers/{{name}}/edit" class="btn btn-outline-secondary">Edit</a>
+                <a href="/workers/{{name}}/code" class="btn btn-outline-primary">Code</a>
+                <button class="btn btn-outline-danger delete-worker" data-worker="{{name}}">Delete</button>
+              </div>
+            </td>
+          </tr>
+        {{/each}}
+      {{else}}
+        <tr>
+          <td colspan="4" class="text-center">No workers found. <a href="/workers/new">Create a new worker</a>.</td>
+        </tr>
+      {{/if}}
+    </tbody>
+  </table>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {    
+    const deleteButtons = document.querySelectorAll('.delete-worker');
+    
+    deleteButtons.forEach(button => {
+      button.addEventListener('click', async function() {
+        const workerName = this.dataset.worker;
+        
+        if (confirm(`Are you sure you want to delete the worker "${workerName}"?`)) {
+          try {
+            const response = await apiRequest(`/api/workers/${workerName}`, 'DELETE');
+            
+            if (response.ok) {
+              alert('Worker deleted successfully');
+              location.reload();
+            } else {
+              const data = await response.json();
+              alert(`Error: ${data.error || 'Failed to delete worker'}`);
+            }
+          } catch (error) {
+            alert(`Error: ${error.message}`);
+          }
+        }
+      });
+    });
+  });
+</script> 

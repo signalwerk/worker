@@ -1,0 +1,46 @@
+using Workerd = import "/workerd/workerd.capnp";
+
+const config :Workerd.Config = (
+  services = [
+    {{#each workers}}
+    (name = "{{name}}", worker = .{{name}}),
+    {{/each}}
+    (name = "router", worker = .router),
+    (name = "kv", worker = .kv),
+  ],
+  sockets = [(name = "http", address = "*:8088", http = (), service = "router")],
+);
+
+const kv :Workerd.Worker = (
+  modules = [(name = "kv", esModule = embed "../conf/kv-mem.js")],
+  compatibilityDate = "2024-04-03",
+  compatibilityFlags = [],
+);
+
+const router :Workerd.Worker = (
+  compatibilityDate = "2024-04-03",
+  modules = [(name = "router", esModule = embed "../conf/router.js")],
+  bindings = [
+    (name = "_config", json = embed "_meta.json"),
+    {{#each workers}}
+    (name = "{{name}}", service = "{{name}}"),
+    {{/each}}
+  ],
+);
+
+{{#each workers}}
+const {{name}} :Workerd.Worker = (
+  modules = [
+    (name = "{{name}}", esModule = embed "{{name}}/index.js"),
+  ],
+  compatibilityDate = "2024-04-03",
+  compatibilityFlags = [],
+  bindings = [
+    (name = "MY_KV", service = "kv"),
+    (name = "_config", json = embed "{{name}}/_meta.json"),
+    {{#each bindings}}
+    (name = "{{@key}}", {{@key}} = "{{this}}"),
+    {{/each}}
+  ],
+);
+{{/each}} 

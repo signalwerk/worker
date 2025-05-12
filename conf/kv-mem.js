@@ -20,13 +20,13 @@ class InMemoryKV {
 const kv = new InMemoryKV();
 
 export default {
-  async get(key) {
+  async get({ key }) {
     return kv.get(key);
   },
-  async set(key, value) {
+  async set({ key, value }) {
     return kv.set(key, value);
   },
-  async delete(key) {
+  async delete({ key }) {
     return kv.delete(key);
   },
 };

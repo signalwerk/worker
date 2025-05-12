@@ -1,0 +1,133 @@
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+  <h1 class="h2">{{#if worker.name}}Edit Worker: {{worker.name}}{{else}}Create New Worker{{/if}}</h1>
+  <div class="btn-toolbar mb-2 mb-md-0">
+    <a href="/" class="btn btn-sm btn-outline-secondary">
+      Back to Dashboard
+    </a>
+    {{#if worker.name}}
+    <a href="/workers/{{worker.name}}/code" class="btn btn-sm btn-outline-primary ms-2">
+      Edit Code
+    </a>
+    {{/if}}
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-8">
+    <form id="worker-form">
+      <div class="mb-3">
+        <label for="name" class="form-label">Worker Name</label>
+        <input type="text" class="form-control" id="name" name="name" value="{{worker.name}}" {{#if worker.name}}readonly{{/if}} required>
+        <div class="form-text">Worker name must contain only letters, numbers, hyphens, and underscores.</div>
+      </div>
+      
+      <div class="mb-3">
+        <label for="routes" class="form-label">Routes (one per line)</label>
+        <textarea class="form-control" id="routes" name="routes" rows="3">{{#each worker.routes}}{{this}}
+{{/each}}</textarea>
+        <div class="form-text">Enter each route pattern on a new line.</div>
+      </div>
+      
+      <div class="mb-3">
+        <label class="form-label">Bindings</label>
+        <div id="bindings-container">
+          {{#each worker.bindings}}
+            <div class="input-group mb-2 binding-row">
+              <input type="text" class="form-control binding-key" placeholder="Key" value="{{@key}}">
+              <input type="text" class="form-control binding-value" placeholder="Value" value="{{this}}">
+              <button type="button" class="btn btn-outline-danger remove-binding">Remove</button>
+            </div>
+          {{/each}}
+        </div>
+        <button type="button" class="btn btn-sm btn-outline-secondary" id="add-binding">Add Binding</button>
+      </div>
+      
+      <button type="submit" class="btn btn-primary">{{#if worker.name}}Update Worker{{else}}Create Worker{{/if}}</button>
+    </form>
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('worker-form');
+    const bindingsContainer = document.getElementById('bindings-container');
+    const addBindingButton = document.getElementById('add-binding');
+    
+    // Add binding row
+    addBindingButton.addEventListener('click', function() {
+      addBindingRow();
+    });
+    
+    // Add initial binding row if none exist
+    if (bindingsContainer.children.length === 0) {
+      addBindingRow();
+    }
+    
+    // Remove binding row
+    bindingsContainer.addEventListener('click', function(e) {
+      if (e.target.classList.contains('remove-binding')) {
+        e.target.closest('.binding-row').remove();
+      }
+    });
+    
+    // Form submission
+    form.addEventListener('submit', async function(e) {
+      e.preventDefault();
+      
+      const name = document.getElementById('name').value.trim();
+      const routesText = document.getElementById('routes').value.trim();
+      
+      // Parse routes
+      const routes = routesText ? routesText.split('\n').map(route => route.trim()).filter(Boolean) : [];
+      
+      // Parse bindings
+      const bindings = {};
+      const bindingRows = document.querySelectorAll('.binding-row');
+      bindingRows.forEach(row => {
+        const key = row.querySelector('.binding-key').value.trim();
+        const value = row.querySelector('.binding-value').value.trim();
+        
+        if (key && value) {
+          bindings[key] = value;
+        }
+      });
+      
+      // Prepare data
+      const workerData = {
+        name,
+        routes,
+        bindings
+      };
+      
+      try {
+        // Determine if creating or updating
+        const isUpdate = !!{{#if worker.name}}true{{else}}false{{/if}};
+        const url = isUpdate ? `/api/workers/${name}` : '/api/workers';
+        const method = isUpdate ? 'PUT' : 'POST';
+        
+        const response = await apiRequest(url, method, workerData);
+        
+        if (response.ok) {
+          alert(`Worker ${isUpdate ? 'updated' : 'created'} successfully`);
+          window.location.href = '/';
+        } else {
+          const data = await response.json();
+          alert(`Error: ${data.error || 'Failed to save worker'}`);
+        }
+      } catch (error) {
+        alert(`Error: ${error.message}`);
+      }
+    });
+    
+    function addBindingRow() {
+      const row = document.createElement('div');
+      row.className = 'input-group mb-2 binding-row';
+      row.innerHTML = `
+        <input type="text" class="form-control binding-key" placeholder="Key">
+        <input type="text" class="form-control binding-value" placeholder="Value">
+        <button type="button" class="btn btn-outline-danger remove-binding">Remove</button>
+      `;
+      bindingsContainer.appendChild(row);
+    }
+  });
+</script> 
