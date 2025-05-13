@@ -26,12 +26,12 @@ api_call() {
   if [ -z "$data" ]; then
     curl -s -X "$method" \
       -H "Content-Type: application/json" \
-      -H "X-API-Key: $API_KEY" \
+      -H "Authorization: $API_KEY" \
       "$API_URL$endpoint"
   else
     curl -s -X "$method" \
       -H "Content-Type: application/json" \
-      -H "X-API-Key: $API_KEY" \
+      -H "Authorization: $API_KEY" \
       -d "$data" \
       "$API_URL$endpoint"
   fi
@@ -69,7 +69,7 @@ fi
 
 # Test setting a value with TTL
 echo -e "\n${BLUE}Testing setting a value with TTL...${NC}"
-response=$(api_call "POST" "/kv/$NAMESPACE/ttlkey" '{"value": "expires soon", "ttl": 5000}')
+response=$(api_call "POST" "/kv/$NAMESPACE/ttlkey" '{"value": "expires soon", "ttl": 5}')
 if [[ $response == *"expires soon"* ]] && [[ $response == *"expires_at"* ]]; then
   echo -e "${GREEN}Set value with TTL passed!${NC}"
 else

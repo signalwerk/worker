@@ -8,11 +8,10 @@ services:
       - "3000:3000"
     volumes:
       - ./DATA/workers:/app/DATA/workers
-      - ./commons:/app/commons
       - ./admin/templates:/app/templates
     environment:
       - NODE_ENV=production
-      - API_KEY=${API_KEY:-admin_api_key}
+      - API_KEY=${API_KEY}
       - KV_SERVICE_URL=http://kv-service:3001
     depends_on:
       - kv-service
@@ -29,7 +28,7 @@ services:
       - ./DATA/kv:/app/DATA/kv
     environment:
       - NODE_ENV=production
-      - API_KEY=${API_KEY:-admin_api_key}
+      - API_KEY=${API_KEY}
     restart: unless-stopped
 
   # Workerd runtime service
@@ -38,13 +37,14 @@ services:
       context: ./workerd-service
       dockerfile: Dockerfile
     ports:
+      - "3002:3002"
       - "8088:8088"
     volumes:
-      - ./DATA:/app/DATA
+      - ./DATA/workers:/app/DATA/workers
       - ./commons:/app/commons
     environment:
       - NODE_ENV=production
-      - API_KEY=${API_KEY:-admin_api_key}
+      - API_KEY=${API_KEY}
     depends_on:
       - worker-admin
       - kv-service

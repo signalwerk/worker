@@ -64,9 +64,7 @@ setInterval(() => {
 
 const app = express();
 const PORT = process.env.PORT || 3001;
-const API_KEY = process.env.API_KEY 
-
-
+const API_KEY = process.env.API_KEY;
 
 if (!API_KEY) {
   throw new Error("API_KEY is not set");
@@ -78,7 +76,7 @@ app.use(bodyParser.json());
 
 // API Key authentication middleware
 const authenticateApiKey = (req, res, next) => {
-  const apiKey = req.headers["x-api-key"];
+  const apiKey = req.headers["authorization"];
 
   if (!apiKey || apiKey !== API_KEY) {
     return res.status(401).json({ error: "Unauthorized: Invalid API key" });
@@ -117,14 +115,14 @@ app.get("/kv/:namespace/:key", async (req, res) => {
 app.post("/kv/:namespace/:key", async (req, res) => {
   try {
     const { namespace, key } = req.params;
-    const { value, ttl } = req.body; // ttl in milliseconds
+    const { value, ttl } = req.body; // ttl in seconds
 
     if (value === undefined) {
       return res.status(400).json({ error: "Value is required" });
     }
 
     const now = Date.now();
-    const expires_at = ttl ? now + ttl : null;
+    const expires_at = ttl ? now + ttl * 1000 : null;
 
     putStmt.run(namespace, key, JSON.stringify(value), now, now, expires_at);
     res.status(201).json({

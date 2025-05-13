@@ -87,7 +87,7 @@ The KV Service provides a RESTful API:
 - `DELETE /kv/:key` - Delete a value (requires API key)
 - `GET /kv` - List all keys (requires API key)
 
-Authentication is done via the `X-API-Key` header.
+Authentication is done via the `Authorization` header.
 
 ## API
 
@@ -101,7 +101,7 @@ The admin interface provides a RESTful API:
 - `PUT /api/workers/:name` - Update a worker
 - `DELETE /api/workers/:name` - Delete a worker
 
-Authentication is done via the `X-API-Key` header.
+Authentication is done via the `Authorization` header.
 
 ## Architecture
 

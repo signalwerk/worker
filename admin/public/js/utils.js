@@ -21,7 +21,7 @@ async function apiRequest(url, method = 'GET', data = null) {
     const options = {
       method,
       headers: {
-        'X-API-Key': apiKey
+        'Authorization': apiKey
       }
     };
     

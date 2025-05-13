@@ -44,7 +44,7 @@ app.use(express.static(path.join(APP_DIR, "public")));
 
 // API Key authentication middleware
 const authenticateApiKey = (req, res, next) => {
-  const apiKey = req.headers["x-api-key"];
+  const apiKey = req.headers["authorization"];
 
   if (!apiKey || apiKey !== API_KEY) {
     return res.status(401).json({ error: "Unauthorized: Invalid API key" });
@@ -131,7 +131,7 @@ const restartWorkerd = async () => {
       {},
       {
         headers: {
-          "x-api-key": API_KEY,
+          Authorization: API_KEY,
         },
       },
     );
@@ -155,8 +155,6 @@ app.get("/login", (req, res) => {
 
 app.post("/login", (req, res) => {
   const { apiKey } = req.body;
-
-  console.log("Received login attempt with apiKey:", apiKey);
 
   if (apiKey === API_KEY) {
     console.log("Login successful, setting cookie");
