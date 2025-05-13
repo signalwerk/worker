@@ -3,7 +3,7 @@ const { exec } = require("child_process");
 const fs = require("fs");
 
 const app = express();
-const PORT = process.env.RESTART_PORT || 3002;
+const PORT = process.env.RESTART_PORT || 3042;
 const API_KEY = process.env.API_KEY;
 
 if (!API_KEY) {

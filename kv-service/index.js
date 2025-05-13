@@ -63,7 +63,7 @@ setInterval(() => {
 }, 60 * 60 * 1000); // Run every hour
 
 const app = express();
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT || 3041;
 const API_KEY = process.env.API_KEY;
 
 if (!API_KEY) {

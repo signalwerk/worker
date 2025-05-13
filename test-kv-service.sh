@@ -6,7 +6,7 @@ API_KEY=$(grep API_KEY .env | cut -d '=' -f2)
 
 
 # Configuration
-API_URL="http://localhost:3001"
+API_URL="http://localhost:3041"
 NAMESPACE="test_namespace"
 
 # Colors for better output

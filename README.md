@@ -1,4 +1,4 @@
-http://admin.worker.localhost.signalwerk.ch:3000/
+http://admin.worker.localhost.signalwerk.ch:3040/
 
 
 https://github.com/cloudflare/workerd/blob/main/src/workerd/server/workerd.capnp
@@ -47,9 +47,9 @@ docker-compose up -d
 
 Once the services are running, you can access:
 
-- Admin Interface: http://localhost:3000
-- KV Service API: http://localhost:3001
-- Workerd: http://localhost:8088
+- Admin Interface: http://localhost:3040
+- KV Service API: http://localhost:3041
+- Workerd: http://localhost:8088 http://localhost:3042
 
 ### Security
 

@@ -10,9 +10,9 @@ const handlebars = require("handlebars");
 const exphbs = require("express-handlebars");
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3040;
 const API_KEY = process.env.API_KEY;
-const KV_SERVICE_URL = process.env.KV_SERVICE_URL || "http://localhost:3001";
+const KV_SERVICE_URL = process.env.KV_SERVICE_URL || "http://localhost:3041";
 
 const APP_DIR = path.join(__dirname, ".");
 const DATA_DIR = path.join(__dirname, "DATA/workers");
@@ -123,7 +123,7 @@ const restartWorkerd = async () => {
   console.log(`Restarting workerd service via API call`);
 
   const WORKERD_RESTART_URL =
-    process.env.WORKERD_RESTART_URL || "http://workerd:3002/restart";
+    process.env.WORKERD_RESTART_URL || "http://workerd:3042/restart";
 
   try {
     const response = await axios.post(

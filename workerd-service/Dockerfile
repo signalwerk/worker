@@ -22,7 +22,7 @@ RUN npm ci
 # Copy application code
 COPY . .
 
-EXPOSE 8088 3002
+EXPOSE 8088 3042
 
 # Start services
 CMD ["node", "index.js"] 

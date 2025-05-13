@@ -5,14 +5,14 @@ services:
       context: ./admin
       dockerfile: Dockerfile
     ports:
-      - "3000:3000"
+      - "3040:3040"
     volumes:
       - /DATA/worker/workers:/app/DATA/workers
       # - ./admin/templates:/app/templates
     environment:
       - NODE_ENV=production
       - API_KEY=${API_KEY}
-      - KV_SERVICE_URL=http://kv-service:3001
+      - KV_SERVICE_URL=http://kv-service:3041
     depends_on:
       - kv-service
     restart: unless-stopped
@@ -23,7 +23,7 @@ services:
       context: ./kv-service
       dockerfile: Dockerfile
     ports:
-      - "3001:3001"
+      - "3041:3041"
     volumes:
       - /DATA/worker/kv:/app/DATA/kv
     environment:
@@ -37,7 +37,7 @@ services:
       context: ./workerd-service
       dockerfile: Dockerfile
     ports:
-      - "3002:3002"
+      - "3042:3042"
       - "8088:8088"
     volumes:
       - /DATA/worker/workers:/app/DATA/workers

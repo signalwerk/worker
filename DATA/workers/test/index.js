@@ -35,7 +35,7 @@ export default {
     // const a =  await env.testKV.fetch(new Request("http://internal/initialize"), env);
 
     // return a;
-    const a = await fetch("http://localhost:3001/health");
+    const a = await fetch("http://localhost:3041/health");
 
     return new Response(a.statusText);
 
