@@ -5,14 +5,15 @@ const Database = require("better-sqlite3");
 const fs = require("fs");
 const path = require("path");
 
+const DATA_DIR = path.join(__dirname, "DATA/kv");
+
 // Ensure the data directory exists
-const dataDir = path.join(__dirname, "data");
-if (!fs.existsSync(dataDir)) {
-  fs.mkdirSync(dataDir, { recursive: true });
+if (!fs.existsSync(DATA_DIR)) {
+  fs.mkdirSync(DATA_DIR, { recursive: true });
 }
 
 // Initialize SQLite database
-const db = new Database(path.join(dataDir, "kv-store.sqlite"));
+const db = new Database(path.join(DATA_DIR, "kv-store.sqlite"));
 
 // Create table if it doesn't exist
 db.exec(`
@@ -63,7 +64,13 @@ setInterval(() => {
 
 const app = express();
 const PORT = process.env.PORT || 3001;
-const API_KEY = process.env.API_KEY || "admin_api_key";
+const API_KEY = process.env.API_KEY 
+
+
+
+if (!API_KEY) {
+  throw new Error("API_KEY is not set");
+}
 
 // Middleware
 app.use(cors());
@@ -144,11 +151,9 @@ app.delete("/kv/:namespace/:key", async (req, res) => {
     }
 
     deleteStmt.run(namespace, key);
-    res
-      .status(200)
-      .json({
-        message: `Key '${key}' in namespace '${namespace}' deleted successfully`,
-      });
+    res.status(200).json({
+      message: `Key '${key}' in namespace '${namespace}' deleted successfully`,
+    });
   } catch (error) {
     console.error("Error deleting value:", error);
     res.status(500).json({ error: "Internal server error" });
@@ -199,7 +204,7 @@ app.get("/kv", async (req, res) => {
 });
 
 // Health check endpoint
-app.get("/health", authenticateApiKey, (req, res) => {
+app.get("/health", (req, res) => {
   res.status(200).json({ status: "healthy" });
 });
 

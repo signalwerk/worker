@@ -7,8 +7,8 @@ services:
     ports:
       - "3000:3000"
     volumes:
-      - ./DATA:/app/DATA
-      - ./conf:/app/conf
+      - ./DATA/workers:/app/DATA/workers
+      - ./commons:/app/commons
       - ./admin/templates:/app/templates
     environment:
       - NODE_ENV=production
@@ -26,7 +26,7 @@ services:
     ports:
       - "3001:3001"
     volumes:
-      - kv-data:/app/data
+      - ./DATA/kv:/app/DATA/kv
     environment:
       - NODE_ENV=production
       - API_KEY=${API_KEY:-admin_api_key}
@@ -41,7 +41,7 @@ services:
       - "8088:8088"
     volumes:
       - ./DATA:/app/DATA
-      - ./conf:/app/conf
+      - ./commons:/app/commons
     environment:
       - NODE_ENV=production
       - API_KEY=${API_KEY:-admin_api_key}

@@ -4,7 +4,13 @@ const fs = require('fs');
 
 const app = express();
 const PORT = process.env.RESTART_PORT || 3002;
-const API_KEY = process.env.API_KEY || 'admin_api_key';
+const API_KEY = process.env.API_KEY 
+
+
+if (!API_KEY) {
+  throw new Error("API_KEY is not set");
+}
+
 
 // Middleware to parse JSON
 app.use(express.json());

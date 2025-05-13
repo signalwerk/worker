@@ -1,8 +1,12 @@
 #!/bin/bash
 
+
+# Read from .env file
+API_KEY=$(grep API_KEY .env | cut -d '=' -f2)
+
+
 # Configuration
 API_URL="http://localhost:3001"
-API_KEY="admin_api_key"
 NAMESPACE="test_namespace"
 
 # Colors for better output

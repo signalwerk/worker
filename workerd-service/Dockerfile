@@ -13,16 +13,15 @@ RUN apt-get update && apt-get install -y \
 # Install workerd
 RUN npm install -g workerd@1.20250510.0
 
-
+# Copy package files
 COPY package*.json ./
 
-# Install Node.js dependencies
+# Install dependencies
 RUN npm ci
 
-# Copy project files
+# Copy application code
 COPY . .
 
-# Expose the workerd and restart service ports
 EXPOSE 8088 3002
 
 # Start services

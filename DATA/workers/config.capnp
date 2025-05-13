@@ -13,14 +13,14 @@ const config :Workerd.Config = (
 );
 
 const kv :Workerd.Worker = (
-  modules = [(name = "kv", esModule = embed "../conf/kv-mem.js")],
+  modules = [(name = "kv", esModule = embed "../../commons/kv-mem.js")],
   compatibilityDate = "2024-04-03",
   compatibilityFlags = [],
 );
 
 const router :Workerd.Worker = (
   compatibilityDate = "2024-04-03",
-  modules = [(name = "router", esModule = embed "../conf/router.js")],
+  modules = [(name = "router", esModule = embed "../../commons/router.js")],
   bindings = [
     (name = "_config", json = embed "_meta.json"),
     (name = "w1", service = "w1"),

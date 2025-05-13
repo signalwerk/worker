@@ -11,10 +11,10 @@ RUN apt-get update && apt-get install -y \
     libsqlite3-dev \
     && rm -rf /var/lib/apt/lists/*
 
-# Copy package files first for better caching
+# Copy package files
 COPY package*.json ./
 
-# Install dependencies with rebuild
+# Install dependencies
 RUN npm ci
 
 # Copy application code
@@ -22,4 +22,5 @@ COPY . .
 
 EXPOSE 3001
 
+# Start services
 CMD ["node", "index.js"] 

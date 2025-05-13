@@ -11,13 +11,15 @@ const exphbs = require("express-handlebars");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-const API_KEY = process.env.API_KEY || "admin_api_key";
+const API_KEY = process.env.API_KEY;
 const KV_SERVICE_URL = process.env.KV_SERVICE_URL || "http://localhost:3001";
-const WORKERD_CONTAINER_NAME =
-  process.env.WORKERD_CONTAINER_NAME || "worker-workerd-1";
 
 const APP_DIR = path.join(__dirname, ".");
-const DATA_DIR = path.join(__dirname, "DATA");
+const DATA_DIR = path.join(__dirname, "DATA/workers");
+
+if (!API_KEY) {
+  throw new Error("API_KEY is not set");
+}
 
 // Middleware
 app.use(cors());
@@ -54,9 +56,6 @@ const authenticateApiKey = (req, res, next) => {
 // Authentication middleware for UI pages
 const authenticateForUi = (req, res, next) => {
   const authCookie = req.cookies?.apiKey;
-
-  console.log("Auth cookie:", authCookie);
-  console.log("Expected API key:", API_KEY);
 
   if (!authCookie || authCookie !== API_KEY) {
     console.log("Authentication failed, redirecting to login");
