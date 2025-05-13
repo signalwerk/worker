@@ -7,8 +7,8 @@ services:
     ports:
       - "3000:3000"
     volumes:
-      - ./DATA/workers:/app/DATA/workers
-      - ./admin/templates:/app/templates
+      - /DATA/worker/workers:/app/DATA/workers
+      # - ./admin/templates:/app/templates
     environment:
       - NODE_ENV=production
       - API_KEY=${API_KEY}
@@ -25,7 +25,7 @@ services:
     ports:
       - "3001:3001"
     volumes:
-      - ./DATA/kv:/app/DATA/kv
+      - /DATA/worker/kv:/app/DATA/kv
     environment:
       - NODE_ENV=production
       - API_KEY=${API_KEY}
@@ -40,8 +40,8 @@ services:
       - "3002:3002"
       - "8088:8088"
     volumes:
-      - ./DATA/workers:/app/DATA/workers
-      - ./commons:/app/commons
+      - /DATA/worker/workers:/app/DATA/workers
+      # - ./commons:/app/commons
     environment:
       - NODE_ENV=production
       - API_KEY=${API_KEY}
@@ -49,6 +49,3 @@ services:
       - worker-admin
       - kv-service
     restart: unless-stopped
-
-volumes:
-  kv-data:

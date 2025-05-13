@@ -1,3 +1,6 @@
+http://admin.worker.localhost.signalwerk.ch:3000/
+
+
 https://github.com/cloudflare/workerd/blob/main/src/workerd/server/workerd.capnp
 
 # Worker Manager
